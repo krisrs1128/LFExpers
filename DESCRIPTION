@@ -6,3 +6,8 @@ Description: Some basic latent factor models to apply to the microbiome.
 Depends: R (>= 3.2.3)
 License: What license is it under?
 LazyData: true
+Imports: Rcpp, RcppArmadillo
+LinkingTo: Rcpp, RcppArmadillo
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
