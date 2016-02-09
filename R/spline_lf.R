@@ -114,12 +114,12 @@ spline_lf <- function(Y, H, B0, W0, opts = list()) {
 #' E <- matrix(.5 * rnorm(N * P), N, P)
 #'
 #' Y <- H %*% B %*% t(W) + E
-#' Y[sample(n * p, n * p * .4)] <- NA # 40% missing at random
+#' Y[sample(N * P, N * P * .4)] <- NA # 40% missing at random
 #'
 #' # fit the model
 #' B0 <- matrix(rnorm(L * K), L, K)
 #' B_res <- get_B(Y, H, W, B0)
-get_B <- function(Y, H, W, B0, nu = .0001, n_iter = 100) {
+get_B <- function(Y, H, W, B0, nu = 1e-5, n_iter = 100) {
   # get problem dimensions
   N <- nrow(Y)
   P <- ncol(Y)
@@ -131,7 +131,7 @@ get_B <- function(Y, H, W, B0, nu = .0001, n_iter = 100) {
   ix <- 1
   B <- B0
 
-  # SGD sweep over entries of B, seeing each entry n_iter times
+  # coordinate descent sweep over entries of B, seeing each entry n_iter times
   for(iter in seq_len(n_iter)) {
     if(iter %% 20 == 0) cat(sprintf("iter %d\n", iter))
     for(l in seq_len(L)) {
