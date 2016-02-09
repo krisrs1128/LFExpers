@@ -15,13 +15,21 @@ the linear mixture HB.)}
 
 \item{B0}{The initial matrix for B in the optimization.}
 
-\item{W0}{The initial matrix for W in the optimization.}
+\item{W0}{The initial matrix for W in the optimization. Usually initialize
+eigenvectors from SVD.}
 
 \item{opts}{A (potentially only partially specified) list of options to use
 during the optimization. See merge_spline_lf_opts() for choices.
 gradient descent.}
 
 \item{W}{The samples-to-latent-source coefficients matrix, assumed known.}
+}
+\value{
+A list with the following elements, \cr
+   $obj The matrix of terms of the objective function, after each iteration. \cr
+    of the alternating minimization. \cr
+   $W The optimized coefficients matrix. \cr
+   $B The optimized mixing matrix for the sources.
 }
 \description{
 Minimize (over B and W)
