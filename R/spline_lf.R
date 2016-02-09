@@ -5,6 +5,47 @@
 # It only optimizes over nonmissing entries in Y.
 ################################################################################
 
+
+merge_spline_lf_opts <- function(opts = list()) {
+  default_opts <- list()
+  default_opts$alpha <- 1
+  default_opts$lambda <- 0
+  default_opts$n_iter <- 100
+  default_opts$n_iter_B <- 10
+  default_opts$nu <- 1e-5
+  modifyList(default_opts, opts)
+}
+
+
+
+
+spline_lf <- function(Y, H, B0, W0, opts = list()) {
+  opts <- merge_spline_lf_opts(opts)
+  elnet_W <- elnet_fun(opts$lambda, opts$alpha)
+
+  # get problem dimensions
+  N <- nrow(Y)
+  P <- ncol(Y)
+  K <- ncol(W)
+  L <- ncol(H)
+
+  # initialize results
+  param <- list(W = W0, B = B0)
+  obj_names <- c("iter", "RSS", "W1", "W2", "B1", "B2")
+  obj <- matrix(NA, opts$n_iter, 6, dimnames = list(1:opts$n_iter, obj_names))
+
+  # perform optimization
+  for(i in seq_len(opts$n_iter)) {
+    param$W <- independent_models(H %*% param$B, Y, elnet_W)
+    param$B <- get_B(Y, H, param$W, param$B, opts$nu, opts$n_iter_B)$B
+    obj[i, ] <- c(i, spline_lf_objective(Y, H, param))
+    cat(sprintf("Iteration %g | RSS: %f | W1: %f | W2: %f | | B1: %f | B2: %f\n",
+                obj[i, 1], obj[i, 2], obj[i, 3], obj[i, 4], obj[i, 5], obj[i, 6]))
+  }
+
+  param
+}
+
 #' @title Given Y, H, and W, optimize B stochastic gradient descent
 #' @description This is minimizing ||Y - HBW^{T}||_{2}^{2} over B, with all
 #' other matrices assumed known.
@@ -28,6 +69,7 @@
 #' K <- 5
 #' L <- 6
 #'
+#' library("splines")
 #' H <- bs(1:N, df = L, degree = 1)
 #' W <- matrix(rnorm(P * K), P, K)
 #' B <- matrix(rnorm(L * K), L, K)
@@ -66,3 +108,9 @@ get_B <- function(Y, H, W, B0, nu = .0001, n_iter = 100) {
   }
   list(B = B, obj = obj)
 }
+
+spline_lf_objective <- function(Y, H, param) {
+  c(sum((Y - H %*% param$B %*% t(param$W))^2, na.rm = T), sum(abs(param$W)),
+    sum(param$W ^ 2), sum(abs(param$B)), sum(param$B ^ 2))
+}
+
