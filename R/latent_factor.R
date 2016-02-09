@@ -12,9 +12,9 @@
 #' is fixed across people for each time, which is why it is a shorter dimension
 #' than Y. I.e., this model can also be written as
 #' y_{ijt} = phi_{t} ^ T w_{j} + noise.
-#' @param Y An n x J real matrix, with censored values set to NA. The standard
+#' @param Y An N x J real matrix, with censored values set to NA. The standard
 #' application we have in mind is the sample x OTU count matrix.
-#' @param time_mask An n x T matrix, where T is the unique number of time points
+#' @param time_mask An N x T matrix, where T is the unique number of time points
 #' across all samples, where the it^th entry is 1 is sample i was taken at time
 #' i.
 #' @param Phi0 The initial value of Phi, the basis matrix.
