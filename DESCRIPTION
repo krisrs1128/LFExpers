@@ -1,0 +1,8 @@
+Package: LFExpers
+Title: Experiments in Latent Factor Modeling
+Version: 0.0.0.9000
+Authors@R: person("Kris", "Sankaran", email = "krissankaran@stanford.edu", role = c("aut", "cre"))
+Description: Some basic latent factor models to apply to the microbiome.
+Depends: R (>= 3.2.3)
+License: What license is it under?
+LazyData: true
