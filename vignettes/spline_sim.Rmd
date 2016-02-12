@@ -1,0 +1,35 @@
+---
+title: "Simulation for Latent Factor Splines"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Setup
+
+```{r}
+library("knitr")
+read_chunk("spline_sim.R")
+```
+
+```{r, libraries}
+```
+
+## Preliminary plots
+
+First, we can plot result of the example spline latent factor
+model. There isn't that much noise in the example, so of course the
+reconstruction is good.
+
+```{r, example-reconstruction}
+```
+
+Beware overinterpreting the latent sources though! They are only
+unique up to rotations.
+
+```{r, example-sources}
+```
+
