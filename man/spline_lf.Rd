@@ -61,6 +61,6 @@ Y[sample(N * P, N * P * .4)] <- NA # 40\% missing at random
 # fit the model
 B0 <- matrix(rnorm(L * K), L, K)
 W0 <- matrix(rnorm(P * K), P, K)
-spline_fit <- spline_lf(Y, H, B0, W0, list(n_iter = 10))
+spline_fit <- spline_lf(Y, H, B0, W0)
 }
 
