@@ -43,3 +43,20 @@ are omitted for now. We might also be interested in how the model
 performs under various misspecifications (incorrect basis, wrong
 number of sources, nongaussianity, outliers, etc.), but this is also
 omitted.
+
+In a few cases, the coordinate descent estimates blew up. Really, we
+should be tuning the step-sizes according to the noise level, or at
+least do a line search. So, in practice, this kind of behavior can be
+avoided.
+
+```{r, simulation-data, echo = F}
+```
+
+```{r, sim-funs}
+```
+
+```{r, process-sims}
+```
+
+```{r, plot-sim}
+```
