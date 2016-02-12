@@ -10,6 +10,7 @@ library("plyr")
 library("ggplot2")
 library("dplyr")
 library("tidyr")
+library("stringr")
 theme_set(theme_bw())
 
 ## ---- example-reconstruction ----
@@ -56,10 +57,62 @@ for(i in seq_along(sigmas)) {
   for(j in seq_along(na_props)) {
     E <- matrix(sigmas[i] * rnorm(N * P), N, P)
     Y <- H %*% B %*% t(W) + E
-    Y[sample(N * P, N * P * na_props[j])] <- NA # 40% missing at random
+    Y[sample(N * P, N * P * na_props[j])] <- NA
 
     # fit the model
     fits[[ix]] <- spline_lf(Y, H, B0, W0, list(n_iter = 50))
+    fits[[ix]]$param <- list("sigma" = sigmas[i], "na_prop" = na_props[j])
     ix <- ix + 1
   }
 }
+
+## ---- sim-funs ----
+obj_line <- function(rss, w1, w2, b1, b2, lambdas, alphas) {
+  rss +
+    elnet_pen(lambdas[1], alphas[1], w1, w2) +
+    elnet_pen(lambdas[2], alphas[2], b1, b2)
+}
+
+obj_matrix <- function(X, lambdas, alphas) {
+  n <- nrow(X)
+  res <- vector(length = n)
+  for(i in seq_len(n)) {
+    res[i] <- obj_line(X[i, "RSS"], X[i, "W1"], X[i, "W2"], X[i, "B1"],
+                       X[i, "B2"], lambdas, alphas)
+  }
+  res
+}
+
+## ---- process-sims ----
+obj_matrix(fits[[1]]$obj, c(1, 0), c(0, 1))
+objs <- lapply(fits, function(x) {
+  obj_matrix(x$obj, c(1, 0), c(0, 1))
+})
+
+all_rss <-  lapply(fits, function(x) {
+  obj <- x$obj
+  obj[nrow(obj), "RSS"]
+})
+
+params <- lapply(fits, function(x) {
+  colwise(function(x) { round(x,  3)})(data.frame(x$param))
+})
+params <- do.call(rbind, params)
+
+params_vs_obj <- data.frame(params, obj = do.call(rbind, objs)) %>%
+  melt(id.vars = c("sigma", "na_prop"))
+params_vs_obj$iter <- str_extract(params_vs_obj$variable, "[0-9]+") %>%
+  as.numeric()
+
+## ---- plot-sim ----
+ggplot(params_vs_obj) +
+  geom_line(aes(x = iter, y = value, col = sigma, group = sigma)) +
+  facet_wrap(~na_prop, scale = "free_y") +
+  scale_y_log10() +
+  ggtitle("Objective over iterations, across regimes")
+
+params_vs_rss <- data.frame(params, rss = do.call(rbind, all_rss))
+ggplot(params_vs_rss) +
+  geom_tile(aes(x = as.factor(sigma), y = as.factor(na_prop),
+                fill = log(rss))) +
+  ggtitle("Reconstruction RSS across regimes")
