@@ -33,3 +33,13 @@ unique up to rotations.
 ```{r, example-sources}
 ```
 
+## Simulations
+
+A natural question is how well we can reconstruct the data, in
+different noise and missigness regimes, this is simulated below. We
+might have also wanted to know performance changes when the true
+number of latent sources or complexity of the basis changes, but these
+are omitted for now. We might also be interested in how the model
+performs under various misspecifications (incorrect basis, wrong
+number of sources, nongaussianity, outliers, etc.), but this is also
+omitted.
