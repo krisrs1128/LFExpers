@@ -21,8 +21,8 @@
 #' been missing.
 merge_spline_lf_opts <- function(opts = list()) {
   default_opts <- list()
-  default_opts$alpha <- 1
-  default_opts$lambda <- 0
+  default_opts$alpha <- 0
+  default_opts$lambda <- 1
   default_opts$n_iter <- 100
   default_opts$n_iter_B <- 10
   default_opts$nu <- 1e-5
@@ -81,7 +81,7 @@ spline_lf_objective <- function(Y, H, param) {
 #' # fit the model
 #' B0 <- matrix(rnorm(L * K), L, K)
 #' W0 <- matrix(rnorm(P * K), P, K)
-#' spline_fit <- spline_lf(Y, H, B0, W0, list(n_iter = 10))
+#' spline_fit <- spline_lf(Y, H, B0, W0)
 #' @export
 spline_lf <- function(Y, H, B0, W0, opts = list()) {
   opts <- merge_spline_lf_opts(opts)
@@ -89,7 +89,7 @@ spline_lf <- function(Y, H, B0, W0, opts = list()) {
   # get problem dimensions
   N <- nrow(Y)
   P <- ncol(Y)
-  K <- ncol(W)
+  K <- ncol(W0)
   L <- ncol(H)
 
   # initialize results
