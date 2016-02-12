@@ -10,6 +10,7 @@ library("plyr")
 library("ggplot2")
 library("dplyr")
 library("tidyr")
+library("splines")
 library("stringr")
 theme_set(theme_bw())
 
@@ -41,7 +42,6 @@ P <- 20
 K <- 5
 L <- 6
 
-library("splines")
 H <- bs(1:N, df = L, degree = 1)
 W <- matrix(rnorm(P * K), P, K)
 B <- matrix(rnorm(L * K), L, K)
@@ -49,7 +49,7 @@ B0 <- matrix(rnorm(L * K), L, K)
 W0 <- matrix(rnorm(P * K), P, K)
 
 sigmas <- 10 ^ seq(-1, 1, length.out = 10)
-na_props <- seq(0, .95, length.out = 10)
+na_props <- seq(0, .9, length.out = 10)
 fits <- vector(length = 100, mode = "list")
 
 ix <- 1
@@ -84,7 +84,6 @@ obj_matrix <- function(X, lambdas, alphas) {
 }
 
 ## ---- process-sims ----
-obj_matrix(fits[[1]]$obj, c(1, 0), c(0, 1))
 objs <- lapply(fits, function(x) {
   obj_matrix(x$obj, c(1, 0), c(0, 1))
 })
