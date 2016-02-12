@@ -63,6 +63,25 @@ spline_lf_objective <- function(Y, H, param) {
 #'     of the alternating minimization. \cr
 #'    $W The optimized coefficients matrix. \cr
 #'    $B The optimized mixing matrix for the sources.
+#' @examples
+#' N <- 150
+#' P <- 20
+#' K <- 5
+#' L <- 6
+#'
+#' library("splines")
+#' H <- bs(1:N, df = L, degree = 1)
+#' W <- matrix(rnorm(P * K), P, K)
+#' B <- matrix(rnorm(L * K), L, K)
+#' E <- matrix(.5 * rnorm(N * P), N, P)
+#'
+#' Y <- H %*% B %*% t(W) + E
+#' Y[sample(N * P, N * P * .4)] <- NA # 40% missing at random
+#'
+#' # fit the model
+#' B0 <- matrix(rnorm(L * K), L, K)
+#' W0 <- matrix(rnorm(P * K), P, K)
+#' spline_fit <- spline_lf(Y, H, B0, W0, list(n_iter = 10))
 #' @export
 spline_lf <- function(Y, H, B0, W0, opts = list()) {
   opts <- merge_spline_lf_opts(opts)
