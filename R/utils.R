@@ -3,6 +3,11 @@
 # Utilities for general modeling problems.
 ################################################################################
 
+# logit ------------------------------------------------------------------------
+logit <- function(x) {
+  exp(x) / (1 + exp(x))
+}
+
 # elnet ------------------------------------------------------------------------
 #' @title Wrapper for glmnet at a specific lambda
 #' @param lambda What lambda to use in the optimization?
@@ -10,9 +15,10 @@
 #' at the specified lambda.
 #' @export
 #' @importFrom glmnet glmnet
-elnet_fun <- function(lambda, alpha) {
+elnet_fun <- function(lambda, alpha, family = "gaussian") {
   function(x, y) {
-    B <- glmnet(x, y, intercept = F, lambda = lambda, alpha = alpha)$beta
+    B <- glmnet(x, y, intercept = F, family = family,
+                lambda = lambda, alpha = alpha)$beta
     B[, 1]
   }
 }
