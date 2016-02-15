@@ -36,8 +36,12 @@ svd_y <- svd(Y)
 W0 <- svd_y$v[, 1:K]
 Phi0 <- svd_y$u[, 1:K] %*% diag(svd_y$d[1:K])
 
-lf_res <- logit_lf(Y, Phi0, W0)
+opts <- list(alpha_W = 0.7, lambda_W = 1e-2,
+             alpha_Phi = 0.7, lambda_Phi = 1e-2)
+lf_res <- logit_lf(Y, Phi0, W0, opts)
 
-P_res <- logit(lf_res$Phi %*% t(lf_res$W))
+plot(lf_res$obj)
+
+P_hat <- logit(lf_res$Phi %*% t(lf_res$W))
 plot(P[, 1])
-points(P_res[, 1], col = 'red')
+points(P_hat[, 1], col = 'red')
