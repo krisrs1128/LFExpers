@@ -29,8 +29,8 @@ logit_lf <- function(Y, Phi0, W0, opts = list()) {
                 dimnames = list(1:opts$n_iter, obj_names))
 
   # perform optimization
-  logit_W <- elnet_fun(opts$lambda_W, opts$alpha_W, family = "binomial")
-  logit_Phi <- elnet_fun(opts$lambda_Phi, opts$alpha_Phi, family = "binomial")
+  logit_W <- logit_fun(opts$lambda_W, opts$alpha_W)
+  logit_Phi <- logit_fun(opts$lambda_Phi, opts$alpha_Phi)
   for(i in seq_len(opts$n_iter)) {
     param$W <- independent_models(param$Phi, Y, logit_W)
     param$Phi <- independent_models(param$W, t(Y), logit_Phi)

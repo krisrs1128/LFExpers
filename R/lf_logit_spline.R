@@ -31,7 +31,7 @@ lf_spline_logit <- function(Y, H, B0, W0, opts = list()) {
                 dimnames = list(1:opts$n_iter, obj_names))
 
   # perform optimization
-  logit_W <- elnet_fun(opts$lambda_W, opts$alpha_W, family = "binomial")
+  logit_W <- logit_fun(opts$lambda_W, opts$alpha_W)
   for(i in seq_len(opts$n_iter)) {
 
     # updates
