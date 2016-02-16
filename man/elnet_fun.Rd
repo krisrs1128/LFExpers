@@ -4,7 +4,7 @@
 \alias{elnet_fun}
 \title{Wrapper for glmnet at a specific lambda}
 \usage{
-elnet_fun(lambda, alpha)
+elnet_fun(lambda, alpha, family = "gaussian")
 }
 \arguments{
 \item{lambda}{What lambda to use in the optimization?}
