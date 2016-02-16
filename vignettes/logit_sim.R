@@ -43,8 +43,11 @@ lf_res <- logit_lf(Y, Phi0, W0, opts)
 plot(lf_res$obj)
 
 P_hat <- logit(lf_res$Phi %*% t(lf_res$W))
-plot(P[, 1])
-points(P_hat[, 1], col = 'red')
+for(j in seq_len(ncol(P))) {
+  plot(P[, j], ylim = c(0, 1))
+  points(P_hat[, j], col = "red")
+  Sys.sleep(.2)
+}
 
 ## ---- spline-logit ----
 B0 <- matrix(rnorm(L * K), L, K)
