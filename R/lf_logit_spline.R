@@ -6,7 +6,9 @@
 merge_spline_logit_opts <- function(opts = list()) {
   default_opts <- list()
   default_opts$n_iter <- 10
-  default_opts$lambda_B <- 1e-3
+  default_opts$n_iter_B <- 100
+  default_opts$eta <- 1e-4
+  default_opts$lambda_B <- 0
   default_opts$alpha_B <- 0
   default_opts$lambda_W <- 1e-3
   default_opts$alpha_W <- 0
@@ -31,16 +33,24 @@ lf_spline_logit <- function(Y, H, B0, W0, opts = list()) {
   # perform optimization
   logit_W <- elnet_fun(opts$lambda_W, opts$alpha_W, family = "binomial")
   for(i in seq_len(opts$n_iter)) {
-    param$W <- independent_models(H %*% param$B, Y, logit_W)
-    param$B <- get_logit_B(Y, H, param$W, param$B)
-    cur_obj <- lf_spline_logit_obj(Y, H, param$B, param$W, opts)
 
+    # updates
+    param$W <- independent_models(H %*% param$B, Y, logit_W)
+    B_fit <- get_logit_B(Y, H, param$W, param$B, opts$eta, opts$n_iter_B)
+    param$B <- B_fit$B
+
+    # calculate current objective
+    cur_obj <- lf_spline_logit_obj(Y, H, param$B, param$W, opts)
     obj[i, ] <- c(i, cur_obj)
+
+    cat(sprintf("B change: %f | %f \n", round(B_fit$obj[, "obj"][1], 5),
+                round(B_fit$obj[, "obj"][opts$n_iter_B], 5)))
     cat(sprintf("iter %g | ll: %f | W1: %f | W2: %f | B1: %f | B2: %f | obj %f \n",
                 obj[i, 1], obj[i, 2], obj[i, 3], obj[i, 4],
                 obj[i, 5], obj[i, 6], obj[i, 7]))
   }
   c(param, list(obj = obj))
+
 }
 
 lf_spline_logit_obj <- function(Y, H, B, W, opts) {
@@ -54,6 +64,18 @@ lf_spline_logit_obj <- function(Y, H, B, W, opts) {
   c(ll, W1, W2, B1, B2, obj)
 }
 
-get_logit_B <- function(Y, H, W, B) {
-  stop("get_logit_B() not implemented yet")
+get_logit_B <- function(Y, H, W, B, eta = 1e-5, n_iter = 100) {
+  obj_names <- c("iter", "ll", "W1", "W2", "B1", "B2", "obj")
+  obj <- matrix(NA, n_iter, length(obj_names),
+                dimnames = list(1:n_iter, obj_names))
+
+  opts <- list(alpha_B = 0, lambda_B = 0, lambda_W = 0, alpha_W = 0) # eventually, will add prox
+  for(i in seq_len(n_iter)) {
+    P <- logit(H %*% B %*% t(W))
+    B <- B + eta * t(H) %*% (Y - P) %*% W
+    cur_obj <- lf_spline_logit_obj(Y, H, B, W, opts)
+    obj[i, ] <- c(i, cur_obj)
+  }
+  list(B = B, obj = obj)
+
 }
