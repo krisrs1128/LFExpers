@@ -31,7 +31,7 @@ plot(P[, 1])
 plot(Y[, 1])
 plot(P[, 1], Y[, 1])
 
-# ---- basic-logit ----
+## ---- basic-logit ----
 svd_y <- svd(Y)
 W0 <- svd_y$v[, 1:K]
 Phi0 <- svd_y$u[, 1:K] %*% diag(svd_y$d[1:K])
@@ -45,3 +45,16 @@ plot(lf_res$obj)
 P_hat <- logit(lf_res$Phi %*% t(lf_res$W))
 plot(P[, 1])
 points(P_hat[, 1], col = 'red')
+
+## ---- spline-logit ----
+B0 <- matrix(rnorm(L * K), L, K)
+spline_lf_res <- lf_spline_logit(Y, H, B0, W0, list(n_iter_B = 50, eta = 5e-5, n_iter = 30))
+plot(spline_lf_res$obj[, "obj"])
+
+P_hat <- logit(H %*% spline_lf_res$B %*% t(spline_lf_res$W))
+for(j in seq_len(ncol(P))) {
+  plot(P[, j], ylim = c(0, 1))
+  points(P_hat[, j], col = "red")
+  Sys.sleep(.2)
+}
+
