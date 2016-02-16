@@ -23,6 +23,18 @@ elnet_fun <- function(lambda, alpha, family = "gaussian") {
   }
 }
 
+logit_fun <- function(lambda, alpha){
+  function(x, y) {
+    if(length(unique(y)) > 1 & all(table(y) > 1)) {
+      B <- glmnet(x, y, intercept = F, family = family,
+                  lambda = lambda, alpha = alpha)$beta
+    } else {
+      B <- matrix(0, ncol(x), 1)
+    }
+    B[, 1]
+  }
+}
+
 #' @title Compute the elastic net penalty
 #' @export
 elnet_pen <- function(lambda, alpha, w1, w2) {
