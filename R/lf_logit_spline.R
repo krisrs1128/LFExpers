@@ -15,6 +15,8 @@ merge_spline_logit_opts <- function(opts = list()) {
   modifyList(default_opts, opts)
 }
 
+#' @title Logistic regression with spline basis
+#' @export
 lf_spline_logit <- function(Y, H, B0, W0, opts = list()) {
   opts <- merge_spline_logit_opts(opts)
 

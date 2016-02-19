@@ -4,6 +4,8 @@
 ################################################################################
 
 # logit ------------------------------------------------------------------------
+#' @title logit fun
+#' @export
 logit <- function(x) {
   exp(x) / (1 + exp(x))
 }
@@ -26,7 +28,7 @@ elnet_fun <- function(lambda, alpha, family = "gaussian") {
 logit_fun <- function(lambda, alpha){
   function(x, y) {
     if(length(unique(y)) > 1 & all(table(y) > 1)) {
-      B <- glmnet(x, y, intercept = F, family = family,
+      B <- glmnet(x, y, intercept = F, family = "binomial",
                   lambda = lambda, alpha = alpha)$beta
     } else {
       B <- matrix(0, ncol(x), 1)

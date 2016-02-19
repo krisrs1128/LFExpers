@@ -14,6 +14,9 @@ merge_logit_opts <- function(opts = list()) {
   modifyList(default_opts, opts)
 }
 
+#' @title logistic regression latent factors
+#' @description Special case of exponential family pca
+#' @export
 logit_lf <- function(Y, Phi0, W0, opts = list()) {
   opts <- merge_logit_opts(opts)
 
@@ -44,6 +47,8 @@ logit_lf <- function(Y, Phi0, W0, opts = list()) {
   c(param, list(obj = obj))
 }
 
+#' @title objective function for LF logit model
+#' @export
 lf_logit_obj <- function(Y, Phi, W, opts) {
   ll <- mean(Y * Phi %*% t(W) - log(1 + exp(Phi %*% t(W))))
   W1 <- sum(abs(W))
