@@ -18,11 +18,21 @@ theme_set(theme_bw())
 example(spline_lf)
 
 Y_hat <- H %*% spline_fit$B %*% t(spline_fit$W)
+median_impute <- function(x) {
+  x[is.na(x)] <- median(x, na.rm = T)
+  x
+}
+Y_imp <- colwise(median_impute)(data.frame(Y)) %>%
+  as.matrix()
+svdY <- svd(Y_imp)
+Y_hat_svd <- svdY$u[, 1:K] %*% diag(svdY$d[1:K]) %*% t(svdY$v[, 1:K])
+
 mY <- rbind(data.frame(type = "truth", melt(Y)),
-            data.frame(type = "fit", melt(Y_hat)))
+            data.frame(type= "svd", melt(Y_hat_svd)),
+            data.frame(type = "latent_basis", melt(Y_hat)))
 colnames(mY) <- c("type", "time", "response", "value")
 ggplot(mY) +
-  geom_point(aes(x = time, y = value, col = type), size = .5, alpha = 0.8) +
+  geom_point(aes(x = time, y = value, col = type), size = .2, alpha = 0.8) +
   facet_wrap(~ response) +
   ggtitle("True vs. fitted Y_{j}'s")
 

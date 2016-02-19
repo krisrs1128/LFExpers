@@ -5,6 +5,7 @@
 
 ## ---- libraries ----
 library("splines")
+library("LFExpers")
 
 ## ---- generate-data ----
 N <- 100
@@ -60,4 +61,13 @@ for(j in seq_len(ncol(P))) {
   points(P_hat[, j], col = "red")
   Sys.sleep(.2)
 }
+
+mP <- rbind(data.frame(type = "truth", melt(P[, 1:20])),
+            data.frame(type = "latent_basis", melt(P_hat[, 1:20])),
+            data.frame(type = "Y", melt(Y[, 1:20])))
+
+ggsave("latent_logit_sim.pdf", ggplot(mP) +
+  geom_point(aes(x = Var1, y = value, col = type), size = .3) +
+  facet_wrap(~Var2) +
+  ggtitle("Fit vs. True P_{j}'s"))
 
