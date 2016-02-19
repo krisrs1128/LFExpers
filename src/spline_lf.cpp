@@ -67,15 +67,13 @@ Rcpp::List get_B(arma::mat Y, arma::mat H, arma::mat W, arma::mat B0,
 
   // initialize results
   arma::vec obj = arma::zeros<arma::vec>(n_iter * L * K);
-  int ix = 0;
   arma::mat B = B0;
 
   for(int i = 0; i < n_iter; i++) {
     arma::mat A = 2 * (Y - H * B * W.t());
     A = replace_nas(A, 0);
     B += nu * H.t() * A * W;
-    obj(ix) = arma::accu(arma::square(replace_nas(Y - H * B * W.t(), 0)));
-	ix++;
+    obj(i) = arma::accu(arma::square(replace_nas(Y - H * B * W.t(), 0)));
   }
   return List::create(Named("B") = B, Named("obj") = obj);
 }
